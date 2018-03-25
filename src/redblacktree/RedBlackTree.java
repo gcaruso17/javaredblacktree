@@ -45,23 +45,60 @@ public class RedBlackTree<K extends Comparable<? super K>, V> {
   }
 
   private void insertCaseOne(Node<K, V> current) {
-    throw new RuntimeException("TODO: implement insertion case 1");
+    if (current.getParent() == null) {
+      current.setBlack();
+    } else {
+      insertCaseTwo(current);
+    }
   }
 
   private void insertCaseTwo(Node<K, V> current) {
-    throw new RuntimeException("TODO: implement insertion case 2");
+    if (!current.getParent().isBlack()) {
+      insertCaseThree(current);
+    }
   }
 
   private void insertCaseThree(Node<K, V> current) {
-    throw new RuntimeException("TODO: implement insertion case 3");
+    if (current.hasUncle() && current.getUncle().isRed()) {
+      current.getParent().setBlack();
+      current.getUncle().setBlack();
+      current.getGrandparent().setRed();
+      insertCaseOne(current.getGrandparent());
+    } else {
+      insertCaseFour(current);
+    }
   }
 
   private void insertCaseFour(Node<K, V> current) {
-    throw new RuntimeException("TODO: implement insertion case 4");
+    Node<K, V> grandparent = current.getGrandparent();
+    Node<K, V> parent = current.getParent();
+    if (parent.equals(grandparent.getLeft()) && current.equals(parent.getRight())) {
+      parent.rotateLeft();
+      insertCaseFive(parent);
+    } else if (parent.equals(grandparent.getRight()) && current.equals(parent.getLeft())) {
+      parent.rotateRight();
+      insertCaseFive(parent);
+    } else {
+     insertCaseFive(current);
+    }
   }
 
   private void insertCaseFive(Node<K, V> current) {
-    throw new RuntimeException("TODO: implement insertion case 5");
+    boolean isRoot = current.getGrandparent().getParent() == null;
+    Node<K, V> grandParent = current.getGrandparent();
+    Node<K, V> parent = current.getParent();
+    parent.setBlack();
+    grandParent.setRed();
+    Node<K, V> topNode = root;
+    if (current.equals(parent.getLeft())) {
+      topNode = grandParent.rotateRight();
+    }
+    if (current.equals(parent.getRight())) {
+     topNode = grandParent.rotateLeft();
+    }
+    if (isRoot) {
+      root = topNode;
+    }
   }
 
   private Tuple<Node<K, V>, Node<K, V>> findNode(K key) {
@@ -105,5 +142,4 @@ public class RedBlackTree<K extends Comparable<? super K>, V> {
   public String toString() {
     return "RBT " + root + " ";
   }
-
 }
